@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desarrollo Web | Guía Básica</title>
+  <style>
+    :root {
+      --primario: #1e3a8a;
+      --primario-claro: #3b82f6;
+      --acento: #f59e0b;
+      --fondo: #f8fafc;
+      --texto: #1f2937;
+      --texto-suave: #6b7280;
+      --tarjeta: #ffffff;
+      --borde: #e5e7eb;
+      --exito: #10b981;
+      --error: #ef4444;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--fondo);
+      color: var(--texto);
+      line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .contenedor { width: 90%; max-width: 1100px; margin: 0 auto; }
+
+    /* ===== MENÚ DINÁMICO ===== */
+    header {
+      background: var(--primario);
+      color: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,.2);
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 64px;
+    }
+
+    .logo { font-size: 1.4rem; font-weight: 700; }
+    .logo span { color: var(--acento); }
+
+    #menu-toggle { display: none; }
+
+    .hamburguesa {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 10px;
+    }
+    .hamburguesa span {
+      width: 26px; height: 3px;
+      background: #fff;
+      border-radius: 2px;
+      transition: .3s;
+    }
+
+    .menu { list-style: none; display: flex; gap: 4px; }
+    .menu > li { position: relative; }
+
+    .menu a {
+      display: block;
+      padding: 20px 16px;
+      font-weight: 500;
+      transition: background .3s, color .3s;
+    }
+    .menu > li > a:hover,
+    .menu > li:hover > a { background: var(--primario-claro); }
+
+    .flecha { font-size: .7rem; margin-left: 4px; display: inline-block; transition: transform .3s; }
+    .menu > li:hover .flecha { transform: rotate(180deg); }
+
+    .submenu {
+      list-style: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      min-width: 220px;
+      background: #fff;
+      border-radius: 0 0 8px 8px;
+      box-shadow: 0 8px 20px rgba(0,0,0,.15);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px);
+      transition: all .3s ease;
+    }
+    .menu > li:hover .submenu,
+    .menu > li:focus-within .submenu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    .submenu a {
+      color: var(--texto);
+      padding: 12px 18px;
+      border-left: 3px solid transparent;
+    }
+    .submenu a:hover {
+      background: var(--fondo);
+      border-left-color: var(--acento);
+      color: var(--primario);
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      background: linear-gradient(135deg, var(--primario), var(--primario-claro));
+      color: #fff;
+      text-align: center;
+      padding: 90px 0;
+    }
+    .hero h1 { font-size: 2.6rem; margin-bottom: 14px; }
+    .hero p { font-size: 1.15rem; max-width: 650px; margin: 0 auto 28px; opacity: .9; }
+    .boton {
+      display: inline-block;
+      background: var(--acento);
+      color: var(--texto);
+      padding: 12px 28px;
+      border-radius: 30px;
+      font-weight: 600;
+      transition: transform .3s, box-shadow .3s;
+    }
+    .boton:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,.25); }
+
+    /* ===== SECCIONES ===== */
+    section { padding: 70px 0; scroll-margin-top: 64px; }
+    section:nth-of-type(even) { background: #eef2ff; }
+
+    .titulo-seccion { text-align: center; margin-bottom: 45px; }
+    .titulo-seccion h2 { font-size: 2rem; color: var(--primario); }
+    .titulo-seccion p { color: var(--texto-suave); }
+    .titulo-seccion h2::after {
+      content: "";
+      display: block;
+      width: 60px; height: 4px;
+      background: var(--acento);
+      margin: 10px auto 0;
+      border-radius: 2px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+    }
+
+    .tarjeta {
+      background: var(--tarjeta);
+      border-radius: 12px;
+      padding: 28px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.06);
+      border-top: 4px solid var(--primario-claro);
+      transition: transform .3s, box-shadow .3s;
+      scroll-margin-top: 84px;
+    }
+    .tarjeta:hover { transform: translateY(-6px); box-shadow: 0 10px 25px rgba(0,0,0,.12); }
+    .tarjeta .icono { font-size: 2.2rem; margin-bottom: 10px; }
+    .tarjeta h3 { margin-bottom: 8px; color: var(--primario); }
+    .tarjeta p { color: var(--texto-suave); }
+
+    /* ===== PROBLEMAS Y SOLUCIONES ===== */
+    .acordeon { max-width: 850px; margin: 0 auto; }
+
+    details {
+      background: var(--tarjeta);
+      border-radius: 10px;
+      margin-bottom: 16px;
+      box-shadow: 0 3px 10px rgba(0,0,0,.06);
+      overflow: hidden;
+      scroll-margin-top: 84px;
+    }
+    summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 18px 22px;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      border-left: 5px solid var(--error);
+      transition: background .3s;
+    }
+    summary::-webkit-details-marker { display: none; }
+    summary:hover { background: #fef2f2; }
+    summary::after {
+      content: "+";
+      font-size: 1.5rem;
+      color: var(--primario);
+      transition: transform .3s;
+    }
+    details[open] summary::after { transform: rotate(45deg); }
+    details[open] summary { border-left-color: var(--exito); background: #f0fdf4; }
+
+    .contenido {
+      padding: 0 22px 20px 27px;
+      animation: aparecer .4s ease;
+    }
+    .contenido .etiqueta {
+      display: inline-block;
+      font-size: .8rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin: 14px 0 6px;
+    }
+    .etiqueta.problema { background: #fee2e2; color: var(--error); }
+    .etiqueta.solucion { background: #d1fae5; color: #047857; }
+    .contenido ul { margin-left: 20px; color: var(--texto-suave); }
+    .contenido p { color: var(--texto-suave); }
+
+    @keyframes aparecer {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== FOOTER ===== */
+    footer { background: #0f172a; color: #cbd5e1; padding-top: 55px; }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 35px;
+      padding-bottom: 40px;
+    }
+    footer h4 { color: #fff; margin-bottom: 16px; font-size: 1.1rem; }
+    footer ul { list-style: none; }
+    footer li { margin-bottom: 10px; }
+    footer a { transition: color .3s, padding-left .3s; }
+    footer a:hover { color: var(--acento); padding-left: 5px; }
+
+    .redes { display: flex; gap: 12px; margin-top: 14px; }
+    .redes a {
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      background: #1e293b;
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: .85rem;
+    }
+    .redes a:hover { background: var(--acento); color: #0f172a; padding-left: 0; }
+
+    .copy {
+      border-top: 1px solid #1e293b;
+      text-align: center;
+      padding: 18px 0;
+      font-size: .9rem;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 800px) {
+      .hamburguesa { display: flex; }
+
+      .menu {
+        position: absolute;
+        top: 64px; left: 0; right: 0;
+        flex-direction: column;
+        gap: 0;
+        background: var(--primario);
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height .4s ease;
+      }
+      #menu-toggle:checked ~ .menu { max-height: 600px; }
+
+      #menu-toggle:checked + .hamburguesa span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+      #menu-toggle:checked + .hamburguesa span:nth-child(2) { opacity: 0; }
+      #menu-toggle:checked + .hamburguesa span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+      .menu a { padding: 14px 24px; border-top: 1px solid rgba(255,255,255,.1); }
+
+      .submenu {
+        position: static;
+        background: rgba(0,0,0,.15);
+        box-shadow: none;
+        border-radius: 0;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height .3s ease;
+      }
+      .menu > li:hover .submenu,
+      .menu > li:focus-within .submenu { max-height: 300px; }
+      .submenu a { color: #fff; padding-left: 40px; }
+      .submenu a:hover { background: rgba(255,255,255,.1); color: #fff; }
+
+      .hero { padding: 60px 0; }
+      .hero h1 { font-size: 1.9rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== MENÚ ===== -->
+  <header>
+    <nav class="contenedor">
+      <a href="#inicio" class="logo">Dev<span>Web</span></a>
+
+      <input type="checkbox" id="menu-toggle">
+      <label for="menu-toggle" class="hamburguesa" aria-label="Abrir menú">
+        <span></span><span></span><span></span>
+      </label>
+
+      <ul class="menu">
+        <li><a href="#inicio">Inicio</a></li>
+        <li>
+          <a href="#informacion">Información <span class="flecha">▼</span></a>
+          <ul class="submenu">
+            <li><a href="#html">HTML</a></li>
+            <li><a href="#css">CSS</a></li>
+            <li><a href="#responsive">Diseño responsive</a></li>
+            <li><a href="#buenas-practicas">Buenas prácticas</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#problemas">Problemas y soluciones <span class="flecha">▼</span></a>
+          <ul class="submenu">
+            <li><a href="#p1">Sitio lento</a></li>
+            <li><a href="#p2">No se ve en móvil</a></li>
+            <li><a href="#p3">Estilos no cargan</a></li>
+            <li><a href="#p4">Mal posicionamiento SEO</a></li>
+          </ul>
+        </li>
+        <li><a href="#contacto">Contacto</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- ===== HERO ===== -->
+  <div class="hero" id="inicio">
+    <div class="contenedor">
+      <h1>Desarrollo Web desde lo básico</h1>
+      <p>Aprende los fundamentos para crear sitios web modernos y conoce las soluciones a los problemas más comunes.</p>
+      <a href="#informacion" class="boton">Comenzar</a>
+    </div>
+  </div>
+
+  <main>
+    <!-- ===== INFORMACIÓN BÁSICA ===== -->
+    <section id="informacion">
+      <div class="contenedor">
+        <div class="titulo-seccion">
+          <h2>Información básica</h2>
+          <p>Los pilares que todo sitio web necesita</p>
+        </div>
+
+        <div class="grid">
+          <article class="tarjeta" id="html">
+            <div class="icono">🧱</div>
+            <h3>HTML</h3>
+            <p>Es el lenguaje de marcado que define la estructura y el contenido de una página: títulos, párrafos, imágenes, enlaces y formularios.</p>
+          </article>
+          <article class="tarjeta" id="css">
+            <div class="icono">🎨</div>
+            <h3>CSS</h3>
+            <p>Hojas de estilo que controlan la apariencia: colores, tipografías, espaciados, animaciones y la distribución de los elementos.</p>
+          </article>
+          <article class="tarjeta" id="responsive">
+            <div class="icono">📱</div>
+            <h3>Diseño responsive</h3>
+            <p>Técnica que permite que el sitio se adapte a cualquier pantalla usando media queries, Flexbox y CSS Grid.</p>
+          </article>
+          <article class="tarjeta" id="buenas-practicas">
+            <div class="icono">✅</div>
+            <h3>Buenas prácticas</h3>
+            <p>Usar etiquetas semánticas, optimizar imágenes, cuidar la accesibilidad y mantener un código limpio y ordenado.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== PROBLEMAS Y SOLUCIONES ===== -->
+    <section id="problemas">
+      <div class="contenedor">
+        <div class="titulo-seccion">
+          <h2>Problemas y soluciones</h2>
+          <p>Haz clic en cada problema para ver su solución</p>
+        </div>
+
+        <div class="acordeon">
+          <details id="p1">
+            <summary>🐢 Mi sitio web carga muy lento</summary>
+            <div class="contenido">
+              <span class="etiqueta problema">Problema</span>
+              <p>Las páginas tardan varios segundos en mostrarse, lo que hace que los visitantes se vayan.</p>
+              <span class="etiqueta solucion">Solución</span>
+              <ul>
+                <li>Comprimir imágenes y usar formatos modernos como WebP.</li>
+                <li>Minificar archivos CSS y HTML.</li>
+                <li>Usar <code>loading="lazy"</code> en imágenes.</li>
+                <li>Reducir fuentes y recursos externos innecesarios.</li>
+              </ul>
+            </div>
+          </details>
+
+          <details id="p2">
+            <summary>📱 La página no se ve bien en celulares</summary>
+            <div class="contenido">
+              <span class="etiqueta problema">Problema</span>
+              <p>Los elementos se desbordan, el texto es muy pequeño o aparece scroll horizontal.</p>
+              <span class="etiqueta solucion">Solución</span>
+              <ul>
+                <li>Agregar la etiqueta <code>&lt;meta name="viewport"&gt;</code>.</li>
+                <li>Usar unidades relativas (%, rem, vw) en lugar de píxeles fijos.</li>
+                <li>Aplicar media queries para cada tamaño de pantalla.</li>
+                <li>Diseñar primero para móvil (<em>mobile first</em>).</li>
+              </ul>
+            </div>
+          </details>
+
+          <details id="p3">
+            <summary>🎨 Los estilos CSS no se aplican</summary>
+            <div class="contenido">
+              <span class="etiqueta problema">Problema</span>
+              <p>Se escriben reglas CSS pero la página no cambia de apariencia.</p>
+              <span class="etiqueta solucion">Solución</span>
+              <ul>
+                <li>Verificar que la ruta del archivo CSS sea correcta.</li>
+                <li>Revisar errores de sintaxis (llaves o punto y coma faltantes).</li>
+                <li>Comprobar la especificidad de los selectores.</li>
+                <li>Limpiar la caché del navegador (Ctrl + F5).</li>
+              </ul>
+            </div>
+          </details>
+
+          <details id="p4">
+            <summary>🔍 Mi sitio no aparece en los buscadores</summary>
+            <div class="contenido">
+              <span class="etiqueta problema">Problema</span>
+              <p>El sitio no se muestra en los resultados de Google aunque esté publicado.</p>
+              <span class="etiqueta solucion">Solución</span>
+              <ul>
+                <li>Usar títulos y meta descripciones únicas en cada página.</li>
+                <li>Estructurar el contenido con etiquetas semánticas (h1, h2, article...).</li>
+                <li>Agregar texto alternativo (<code>alt</code>) a las imágenes.</li>
+                <li>Registrar el sitio en Google Search Console.</li>
+              </ul>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== FOOTER / CONTACTO ===== -->
+  <footer id="contacto">
+    <div class="contenedor footer-grid">
+      <div>
+        <h4>Sobre mí</h4>
+        <p>Desarrollador web apasionado por crear sitios rápidos, accesibles y fáciles de usar.</p>
+        <div class="redes">
+          <a href="#" aria-label="Facebook">Fb</a>
+          <a href="#" aria-label="Instagram">Ig</a>
+          <a href="#" aria-label="LinkedIn">In</a>
+          <a href="#" aria-label="GitHub">Gh</a>
+        </div>
+      </div>
+      <div>
+        <h4>Contacto</h4>
+        <ul>
+          <li>👤 Tu Nombre Aquí</li>
+          <li>📧 <a href="mailto:tucorreo@ejemplo.com">tucorreo@ejemplo.com</a></li>
+          <li>📞 <a href="tel:+520000000000">+52 000 000 0000</a></li>
+          <li>📍 Tu ciudad, País</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Enlaces rápidos</h4>
+        <ul>
+          <li><a href="#inicio">Inicio</a></li>
+          <li><a href="#informacion">Información</a></li>
+          <li><a href="#problemas">Problemas y soluciones</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="copy">
+      <p>&copy; 2026 DevWeb · Todos los derechos reservados</p>
+    </div>
+  </footer>
+
+</body>
+</html>
